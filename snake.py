@@ -17,21 +17,22 @@ class SnakeGame:
         self.direction = Vector2(1, 0)  # Dirección inicial (derecha)
         self.add_block = False  # Controla el crecimiento de la serpiente
 
+        # Las posiciones de la serpiente no se ven hasta que se dibujan con la función draw()
     def draw(self):
         for block in self.body:
             pygame.draw.rect(window, (0, 255, 0), (block.x * 20, block.y * 20, 20, 20))
 
     def move(self):
         # Crear una nueva lista basada en el cuerpo actual
-        new_body = self.body[:]
+        new_body = self.body[:] #[:] crea una copia de la lista
         # Insertar un nuevo bloque al frente
-        new_body.insert(0, new_body[0] + self.direction)
+        new_body.insert(0, new_body[0] + self.direction) # ([6, 10], [5, 10], [4, 10], [3, 10])
 
         # Si no se va a agregar un bloque, eliminar el último segmento
         if not self.add_block:
-            new_body.pop()
+            new_body.pop() # ([6, 10], [5, 10], [4, 10])
 
-        # Actualizar el cuerpo de la serpiente y restablecer `add_block`
+        # Actualizar el cuerpo de la serpiente y restablecer 'add_block'
         self.body = new_body
         self.add_block = False
 
@@ -101,9 +102,11 @@ def main():
     apple = Apple()
     score = 0
     fps = pygame.time.Clock()
+    font = pygame.font.Font(None, 36)
 
     while True:
         fps.tick(30)  # Velocidad del juego (30 FPS)
+        fps_text = font.render(f'FPS: {str(int(fps.get_fps()))}', True, (255, 255, 255)) # Se tiene que convertir el valor a string str(int())
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -128,7 +131,24 @@ def main():
             score += 1
             print(f"Score: {score}")
 
-        window.fill((0, 0, 0))  # Fondo negro
+        if score < 10:
+            message = "You are a noob"
+        elif score < 30 and score >= 10:
+            message = "You are a pro"
+        elif score < 60 and score >= 30:
+            message = "You are a gigachad"
+        else:
+            message = "You are a GOD!"
+
+        window.fill((0, 49, 38))  # Color del fondo
+        Score_text = font.render(f'Score: {score}', True, (255, 255, 255))
+        message_text = font.render(f'{message}', True, (255, 255, 255))
+        window.blit(Score_text, (20, 10))
+        if score < 10 or score < 30 and score >= 10:
+            window.blit(message_text, (300, 10))
+        elif score >= 30:
+            window.blit(message_text, (250, 10))
+        window.blit(fps_text, (20, 680))
         snake.move()
         snake.draw()
         apple.draw()
